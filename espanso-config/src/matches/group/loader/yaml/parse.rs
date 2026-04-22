@@ -79,6 +79,9 @@ pub struct YAMLMatch {
     pub image_path: Option<String>,
 
     #[serde(default)]
+    pub audio_path: Option<String>,
+
+    #[serde(default)]
     pub form: Option<String>,
 
     #[serde(default)]

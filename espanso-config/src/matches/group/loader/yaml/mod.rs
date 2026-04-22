@@ -24,7 +24,7 @@ use crate::{
     error::{ErrorRecord, NonFatalErrorSet},
     matches::{
         group::{path::resolve_imports, MatchGroup},
-        ImageEffect, Match, Params, RegexCause, TextFormat, TextInjectMode, UpperCasingStyle,
+        ImageEffect, AudioEffect, Match, Params, RegexCause, TextFormat, TextInjectMode, UpperCasingStyle,
         Value, Variable,
     },
 };
@@ -300,6 +300,8 @@ pub fn try_convert_into_match(
         })
     } else if let Some(image_path) = yaml_match.image_path {
         MatchEffect::Image(ImageEffect { path: image_path })
+    } else if let Some(audio_path) = yaml_match.audio_path {
+        MatchEffect::Audio(AudioEffect { path: audio_path })
     } else {
         MatchEffect::None
     };
@@ -866,11 +868,11 @@ mod tests {
       imports:
         - "sub/sub.yml"
         - "invalid/import.yml" # This should be discarded
-      
+
       global_vars:
         - name: "var1"
           type: "test"
-      
+
       matches:
         - trigger: "hello"
           replace: "world"

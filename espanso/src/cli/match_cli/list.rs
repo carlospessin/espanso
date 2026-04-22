@@ -65,7 +65,16 @@ pub fn print_matches_as_plain(
             if only_triggers {
                 println!("{trigger}");
             } else {
-                let description = m.description();
+                let description = match &m.effect {
+                    espanso_config::matches::MatchEffect::Text(text_effect) => text_effect.replace.clone(),
+                    espanso_config::matches::MatchEffect::Image(image_effect) => {
+                        format!("[IMAGE] {}", image_effect.path)
+                    }
+                    espanso_config::matches::MatchEffect::Audio(audio_effect) => {
+                        format!("[AUDIO] {}", audio_effect.path)
+                    }
+                    espanso_config::matches::MatchEffect::None => String::new(),
+                };
                 if let Some(label) = &m.label {
                     if preserve_newlines {
                         println!("{trigger} - {description} - {label}");
@@ -107,7 +116,12 @@ pub fn print_matches_as_json(match_list: &[&Match]) -> Result<()> {
 
         let replace = match &m.effect {
             espanso_config::matches::MatchEffect::Text(text_effect) => text_effect.replace.clone(),
-            espanso_config::matches::MatchEffect::Image(image_effect) => image_effect.path.clone(),
+            espanso_config::matches::MatchEffect::Image(image_effect) => {
+                format!("[IMAGE] {}", image_effect.path)
+            }
+            espanso_config::matches::MatchEffect::Audio(audio_effect) => {
+                format!("[AUDIO] {}", audio_effect.path)
+            }
             espanso_config::matches::MatchEffect::None => String::new(),
         };
 

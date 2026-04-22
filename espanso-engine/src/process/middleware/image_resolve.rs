@@ -23,6 +23,7 @@ use log::error;
 
 use super::super::Middleware;
 use crate::event::{internal::ImageResolvedEvent, Event, EventType};
+use crate::event::internal::AudioResolvedEvent;
 
 pub trait PathProvider {
     fn get_config_path(&self) -> &Path;
@@ -70,6 +71,33 @@ impl Middleware for ImageResolverMiddleware<'_> {
             return Event::caused_by(
                 event.source_id,
                 EventType::ImageResolved(ImageResolvedEvent { image_path: path }),
+            );
+        }
+        if let EventType::AudioRequested(m_event) = &event.etype {
+            let path = if cfg!(target_os = "windows") {
+                m_event.audio_path.replace('/', "\\")
+            } else {
+                m_event.audio_path.clone()
+            };
+
+            let path = if path.contains("$CONFIG") {
+                let config_path = match self.provider.get_config_path().canonicalize() {
+                    Ok(path) => path,
+                    Err(err) => {
+                        error!(
+                            "unable to canonicalize the config path into the audio resolver: {err}"
+                        );
+                        self.provider.get_config_path().to_owned()
+                    }
+                };
+                path.replace("$CONFIG", &config_path.to_string_lossy())
+            } else {
+                path
+            };
+
+            return Event::caused_by(
+                event.source_id,
+                EventType::AudioResolved(AudioResolvedEvent { audio_path: path }),
             );
         }
 

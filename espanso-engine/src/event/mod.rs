@@ -70,6 +70,8 @@ pub enum EventType {
 
     RenderingRequested(internal::RenderingRequestedEvent),
     ImageRequested(internal::ImageRequestedEvent),
+    AudioRequested(internal::AudioRequestedEvent),
+    AudioResolved(internal::AudioResolvedEvent),
     Rendered(internal::RenderedEvent),
     ImageResolved(internal::ImageResolvedEvent),
     MatchInjected,

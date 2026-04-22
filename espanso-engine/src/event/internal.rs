@@ -68,9 +68,22 @@ pub struct ImageRequestedEvent {
     pub trigger: Option<String>,
 }
 
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ImageResolvedEvent {
     pub image_path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AudioRequestedEvent {
+    pub match_id: i32,
+    pub audio_path: String,
+    pub trigger: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AudioResolvedEvent {
+    pub audio_path: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -106,3 +119,4 @@ pub struct UndoEvent {
     pub trigger: String,
     pub replace: String,
 }
+

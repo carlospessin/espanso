@@ -58,6 +58,8 @@ impl Match {
             &text_effect.replace
         } else if let MatchEffect::Image(_) = &self.effect {
             "Image content"
+        } else if let MatchEffect::Audio(_) = &self.effect {
+            "Audio content"
         } else {
             "No description available for this match"
         }
@@ -156,6 +158,7 @@ pub enum MatchEffect {
     None,
     Text(TextEffect),
     Image(ImageEffect),
+    Audio(AudioEffect),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -192,6 +195,11 @@ impl Default for TextEffect {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub struct ImageEffect {
+    pub path: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
+pub struct AudioEffect {
     pub path: String,
 }
 

@@ -23,7 +23,7 @@ use crate::cli::worker::{builtin::BuiltInMatch, context::Context};
 use espanso_engine::{
     event::{
         internal::DetectedMatch,
-        internal::{ImageRequestedEvent, RenderingRequestedEvent, TextFormat},
+        internal::{ImageRequestedEvent, RenderingRequestedEvent, TextFormat, AudioRequestedEvent},
         EventType,
     },
     process::Multiplexer,
@@ -68,6 +68,13 @@ impl Multiplexer for MultiplexAdapter<'_> {
                         match_id: detected_match.id,
                         image_path: effect.path.clone(),
                         trigger: detected_match.trigger,
+                    }))
+                }
+                MatchEffect::Audio(effect) => {
+                    Some(EventType::AudioRequested(AudioRequestedEvent {
+                        match_id: detected_match.id,
+                        audio_path: effect.path.clone(),
+                        trigger: detected_match.trigger.unwrap_or_default(),
                     }))
                 }
                 MatchEffect::None => None,

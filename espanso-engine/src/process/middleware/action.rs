@@ -18,6 +18,8 @@
  */
 
 use super::super::Middleware;
+
+
 use crate::event::{
     effect::{
         HtmlInjectRequest, ImageInjectRequest, KeySequenceInjectRequest, MarkdownInjectRequest,
@@ -60,7 +62,8 @@ impl Middleware for ActionMiddleware<'_> {
 
     fn next(&self, event: Event, dispatch: &mut dyn FnMut(Event)) -> Event {
         match &event.etype {
-            EventType::Rendered(_) | EventType::ImageResolved(_) => {
+
+            EventType::Rendered(_) | EventType::ImageResolved(_) | EventType::AudioResolved(_) => {
                 dispatch(Event::caused_by(event.source_id, EventType::MatchInjected));
                 dispatch(Event::caused_by(
                     event.source_id,
@@ -95,6 +98,37 @@ impl Middleware for ActionMiddleware<'_> {
                             image_path: m_event.image_path.clone(),
                         }),
                     ),
+                    EventType::AudioResolved(m_event) => {
+                        println!("📋 Copiando e colando áudio: {}", m_event.audio_path);
+
+                        use clipboard_win::{formats, Clipboard, Setter};
+                        use std::process::Command;
+
+                        // 1. copia arquivo
+                        let clip = Clipboard::new_attempts(10).unwrap();
+
+                        formats::FileList
+                            .write_clipboard(&vec![m_event.audio_path.clone()])
+                            .unwrap();
+
+                        drop(clip);
+
+                        // 2. delay
+                        std::thread::sleep(std::time::Duration::from_millis(300));
+
+                        // 3. cola via Windows (Ctrl+V real)
+                        Command::new("powershell")
+                            .args([
+                                "-command",
+                                "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('^v')",
+                            ])
+                            .spawn()
+                            .ok();
+
+                        return Event::caused_by(event.source_id, EventType::NOOP);
+                    },
+
+
                     _ => unreachable!(),
                 }
             }
